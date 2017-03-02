@@ -1,6 +1,8 @@
 % --------------------------------------------------------------------------------------------------------
 function [im_patch, im_patch_original] = get_subwindow_tracking(im, pos, model_sz, original_sz, avg_chans)
 %GET_SUBWINDOW_TRACKING Obtain image sub-window, padding with avg channel if area goes outside of border
+% 返回位于pos位置的origional_sz大小的区域，如果这个大小跟model_sz不一样，那么resize到model_sz
+% 如果在pos位置取origional_sz大小到区域超出了边界，那么就用avg_chans补上
 % -------------------------------------------------------------------------------------------------
     if isempty(original_sz)
         original_sz = model_sz;
