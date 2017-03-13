@@ -29,16 +29,21 @@ function net = make_siameseFC(opts)
         'initBias',           opts.init.initBias, ...
         'strides',            net_opts.strides);
 
+    % 得到了一个分支的net
     branch = dagnn.DagNN.fromSimpleNN(branch);
+
 
     % Add common final stream of the network
     net = dagnn.DagNN();
+    % 修改输入与输出对应的名字为in, out; 之前为x0, x15
     rename_io_vars(branch, 'in', 'out');
+    % 将原先的网络复制一份，一起放入net，并且将每一层的名字重命名为a_或者b_
     add_pair_of_streams(net, branch, ...
-                        {'exemplar', 'instance'}, ...
-                        {'a_feat', 'b_feat'}, ...
+                        {'exemplar', 'instance'}, ... %% 两个网络的输入名称
+                        {'a_feat', 'b_feat'}, ... %% 两个网络的输出的名字
                         net_opts.siamese);
 
+    % 后面加一个卷积层
     net.addLayer('xcorr', XCorr(), ...
                  {'a_feat', 'b_feat'}, ...
                  {'xcorr_out'}, ...

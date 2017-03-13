@@ -25,6 +25,7 @@ function net = vid_create_net(varargin)
         opts.instanceSize = [opts.instanceSize, opts.instanceSize];
     end
 
+    % 修改alexnet的网络结构得到siamesefc的, 得到的是一个分支的net
     net = modified_alexnet(struct(), opts) ;
 
     % Meta parameters

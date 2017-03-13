@@ -49,12 +49,16 @@ function [net, stats] = experiment(imdb_video, varargin)
     opts.train.prefetch = opts.prefetch;
 % -------------------------------------------------------------------------------------------------
     % Get ImageNet Video metadata
+    % So large
+    % store as global variant for convenient
+    global imdb_video;
     if isempty(imdb_video)
         fprintf('loading imdb video...\n');
         imdb_video = load(opts.imdbVideoPath);
     end
 
     % Load dataset statistics
+    % 加载数据集的基本信息
     [rgbMean_z, rgbVariance_z, rgbMean_x, rgbVariance_x] = load_stats(opts);
     if opts.shuffleDataset
         s = RandStream.create('mt19937ar', 'Seed', 'shuffle');
@@ -66,11 +70,13 @@ function [net, stats] = experiment(imdb_video, varargin)
     rng(opts.randomSeed); % Re-seed before calling make_net.
 
     % -------------------------------------------------------------------------------------------------
+    % 构造网络
     net = make_net(opts);
     % -------------------------------------------------------------------------------------------------
 
     [imdb_video, imdb] = choose_val_set(imdb_video, opts);
 
+    % 通过score层以及对应的stride来决定输出的大小
     [resp_sz, resp_stride] = get_response_size(net, opts);
     % We want an odd number so that we can center the target in the middle
     assert(all(mod(resp_sz, 2) == 1), 'resp. size is not odd');
@@ -99,6 +105,8 @@ function [net, stats] = experiment(imdb_video, varargin)
     opts.train.randomSeed = opts.randomSeed;
     % -------------------------------------------------------------------------------------------------
     % Start training
+    % 调用cnn_train_dag训练网络
+    % TODO: cnn_train_dag api
     [net, stats] = cnn_train_dag(net, imdb, batch_fn, opts.train);
     % -------------------------------------------------------------------------------------------------
 end
